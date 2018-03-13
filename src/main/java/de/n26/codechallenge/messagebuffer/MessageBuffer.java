@@ -4,6 +4,7 @@ import de.n26.codechallenge.model.Statistic;
 import de.n26.codechallenge.model.Transaction;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Component
@@ -13,24 +14,28 @@ public class MessageBuffer  {
     private boolean updateBuffer = true;
     private final Statistic stat = new Statistic();
 
-    private  Map buffer = Collections.synchronizedMap(new LinkedHashMap<Long, List<Transaction>>(){
+    private Map buffer = Collections.synchronizedMap(new LinkedHashMap<Long, List<Transaction>>(){
         @Override
         protected boolean removeEldestEntry(Map.Entry<Long, List<Transaction>> eldest) {
             return size() > MAX_SIZE;
         }
     });
 
-
-    public synchronized Map getBuffer(){
+    @PostConstruct
+    private void initBuffer(){
         if(buffer.isEmpty()){
             initBuffer(buffer, System.currentTimeMillis());
         }
+    }
+
+    public Map getBuffer(){
+
         return buffer;
     }
 
     private void initBuffer(Map buffer, Long creationTime) {
-        Long start = creationTime - 60000;
-        for (Long i= start; i <= creationTime; i++){
+        Long end = creationTime + 60000;
+        for (Long i= creationTime; i <= end; i++){
             buffer.put(i, new ArrayList<Transaction>());
         }
         new Thread(new UpdateBufferThread()).start();
