@@ -1,0 +1,54 @@
+group 'de.n26.codechallenge'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext {
+        springBootVersion = '1.4.2.RELEASE'
+    }
+    repositories {
+        // NOTE: You should declare only repositories that you need here
+        mavenLocal()
+        mavenCentral()
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/release" }
+    maven { url "http://repo.spring.io/milestone" }
+    maven { url "http://repo.spring.io/snapshot" }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.apache.commons:commons-lang3:3.0")
+    compile("io.springfox:springfox-swagger2:2.7.0")
+    compile("io.springfox:springfox-swagger-ui:2.7.0")
+    compile ("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.5.3")
+    compile("commons-io:commons-io:2.4")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile('org.easytesting:fest-assert:1.4')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+}
+
+task "fullBuild" {
+    dependsOn "cleanTest", "test", "check", "build"
+}
